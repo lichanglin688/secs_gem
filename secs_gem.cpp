@@ -8,6 +8,7 @@ QByteArray Message::encode()
 {
     QByteArray data;
     QDataStream in(&data, QIODevice::WriteOnly);
+    in.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     in << quint32(0);
     inputMessageHeader(in);
@@ -23,6 +24,8 @@ QByteArray Message::encode()
 void Message::decode(QByteArray data)
 {
     QDataStream out(&data, QIODevice::ReadOnly);
+    out.setFloatingPointPrecision(QDataStream::SinglePrecision);
+
     int length = 0;
     out >> length;
     outMessageHeader(out);
@@ -110,6 +113,14 @@ void Message::inputItem(QDataStream &in, const ItemPtr &item)
         else if(format == Format::U8)
         {
             in << item->getValue<ValueType::U8>(i);
+        }
+        else if(format == Format::F4)
+        {
+            in << item->getValue<ValueType::F4>(i);
+        }
+        else if(format == Format::F8)
+        {
+            in << item->getValue<ValueType::F8>(i);
         }
     }
 }
@@ -288,6 +299,18 @@ Value Message::outItemValue(QDataStream &out, const Format &format)
     else if(format == Format::U8)
     {
         ValueType::I1 value = 0;
+        out >> value;
+        return value;
+    }
+    else if(format == Format::F4)
+    {
+        ValueType::F4 value = 0;
+        out >> value;
+        return value;
+    }
+    else if(format == Format::F8)
+    {
+        ValueType::F8 value = 0;
         out >> value;
         return value;
     }

@@ -3,7 +3,6 @@
 #include "secs_gem.h"
 #include <variant>
 #include <QDebug>
-#include <qudpsocket.h>
 
 #define Debug(x) qDebug() << #x << " ==> " << (x);
 

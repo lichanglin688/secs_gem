@@ -30,11 +30,13 @@ using U1 = uint8_t;
 using U2 = uint16_t;
 using U4 = uint32_t;
 using U8 = uint64_t;
+using F4 = float;
+using F8 = double;
 using Item = ItemPtr;
 };
 
 class Item;
-#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::Item
+#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::F4, ValueType::F8, ValueType::Item
 using Value = variant<ValueTypeList>;
 
 //LCS和JIS8未实现，不可使用
@@ -194,10 +196,14 @@ public:
     {
         qDebug() << "Item count => " << value->getCount();
     }
-//    void operator()(ValueType::Binary value)
-//    {
-//        qDebug() << value;
-//    }
+    void operator()(ValueType::F4 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::F8 value)
+    {
+        qDebug() << value;
+    }
 };
 }
 
