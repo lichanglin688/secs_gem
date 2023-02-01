@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <QByteArray>
+#include <initializer_list>
 
 class QDataStream;
 namespace Secs{
@@ -13,6 +14,7 @@ namespace Secs{
 using std::variant;
 using std::vector;
 using std::string;
+using std::initializer_list;
 
 class Item;
 using ItemPtr = std::shared_ptr<Item>;
@@ -36,7 +38,7 @@ using Item = ItemPtr;
 };
 
 class Item;
-#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::F4, ValueType::F8, ValueType::Item
+#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::Item
 using Value = variant<ValueTypeList>;
 
 //LCS和JIS8未实现，不可使用
@@ -67,22 +69,22 @@ public:
     Item(Format format = Format::NONE);
     ~Item();
 
-    static ItemPtr List();
-    static ItemPtr Bool();
-    static ItemPtr Binary();
-    static ItemPtr I1();
-    static ItemPtr I2();
-    static ItemPtr I4();
-    static ItemPtr I8();
+    static ItemPtr List(initializer_list<ValueType::Item> values = {});
+    static ItemPtr Bool(initializer_list<ValueType::Bool> values = {});
+    static ItemPtr Binary(initializer_list<ValueType::Binary> values = {});
+    static ItemPtr I1(initializer_list<ValueType::I1> values = {});
+    static ItemPtr I2(initializer_list<ValueType::I2> values = {});
+    static ItemPtr I4(initializer_list<ValueType::I4> values = {});
+    static ItemPtr I8(initializer_list<ValueType::I8> values = {});
 
-    static ItemPtr U1();
-    static ItemPtr U2();
-    static ItemPtr U4();
-    static ItemPtr U8();
+    static ItemPtr U1(initializer_list<ValueType::U1> values = {});
+    static ItemPtr U2(initializer_list<ValueType::U2> values = {});
+    static ItemPtr U4(initializer_list<ValueType::U4> values = {});
+    static ItemPtr U8(initializer_list<ValueType::U8> values = {});
 
-    inline void append(const Value &value);
+    void append(const Value &value);
 
-    inline size_t getCount();
+    size_t getCount();
 
     template<typename Type>
     Type getValue(size_t index)
@@ -105,9 +107,11 @@ public:
     ValueType::U8 getU8(size_t index = 0);
     ValueType::Item getList(size_t index = 0);
 
-    inline Format getFormat() const;
+    Format getFormat() const;
 
     int formatSize();
+
+    size_t dataLength();
 
 //private:
     std::vector<Value> values;
@@ -145,6 +149,7 @@ private:
     ItemPtr outItem(QDataStream &out);
     void outItemInfo(QDataStream &out, Format &format, int &count);
     Value outItemValue(QDataStream &out, const Format &format);
+
 };
 
 
@@ -204,6 +209,70 @@ public:
     {
         qDebug() << value;
     }
+};
+
+class CheckVisitor
+{
+public:
+    CheckVisitor()
+    {
+
+    }
+    void operator()(ValueType::ASCII value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::Bool value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::I1 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::I2 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::I4 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::I8 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::U1 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::U2 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::U4 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::U8 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::Item value)
+    {
+        qDebug() << "Item count => " << value->getCount();
+    }
+    void operator()(ValueType::F4 value)
+    {
+        qDebug() << value;
+    }
+    void operator()(ValueType::F8 value)
+    {
+        qDebug() << value;
+    }
+
+private:
+    Format format;
 };
 }
 

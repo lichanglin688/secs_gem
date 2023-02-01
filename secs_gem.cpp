@@ -8,7 +8,6 @@ QByteArray Message::encode()
 {
     QByteArray data;
     QDataStream in(&data, QIODevice::WriteOnly);
-    in.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     in << quint32(0);
     inputMessageHeader(in);
@@ -24,8 +23,6 @@ QByteArray Message::encode()
 void Message::decode(QByteArray data)
 {
     QDataStream out(&data, QIODevice::ReadOnly);
-    out.setFloatingPointPrecision(QDataStream::SinglePrecision);
-
     int length = 0;
     out >> length;
     outMessageHeader(out);
@@ -114,43 +111,35 @@ void Message::inputItem(QDataStream &in, const ItemPtr &item)
         {
             in << item->getValue<ValueType::U8>(i);
         }
-        else if(format == Format::F4)
-        {
-            in << item->getValue<ValueType::F4>(i);
-        }
-        else if(format == Format::F8)
-        {
-            in << item->getValue<ValueType::F8>(i);
-        }
     }
 }
 
 void Message::inputItemInfo(QDataStream &in, const ItemPtr &item)
 {
     Format format = item->getFormat();
-    int count = item->getCount();
-    if(count <= 0)return;
+    int dataLength = item->dataLength();
+    if(dataLength <= 0)return;
 
-    if(count <= 0xff)
+    if(dataLength <= 0xff)
     {
         in << (ValueType::U1)((int)format | 1);
-        in << (ValueType::U1)count;
+        in << (ValueType::U1)dataLength;
     }
-    else if(count <= 0xffff)
+    else if(dataLength <= 0xffff)
     {
         in << (ValueType::U1)((int)format | 2);
-        in << (ValueType::U2)count;
+        in << (ValueType::U2)dataLength;
     }
-    else if(count <= 0xffffff)
+    else if(dataLength <= 0xffffff)
     {
         in << (ValueType::U1)((int)format | 3);
-        quint8 temp = count >> 16;
+        quint8 temp = dataLength >> 16;
         in << temp;
 
-        temp = count >> 8;
+        temp = dataLength >> 8;
         in << temp;
 
-        temp = count;
+        temp = dataLength;
         in << temp;
     }
 }
@@ -262,55 +251,43 @@ Value Message::outItemValue(QDataStream &out, const Format &format)
     }
     else if(format == Format::I2)
     {
-        ValueType::I1 value = 0;
+        ValueType::I2 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::I4)
     {
-        ValueType::I1 value = 0;
+        ValueType::I4 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::I8)
     {
-        ValueType::I1 value = 0;
+        ValueType::I8 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::U1)
     {
-        ValueType::I1 value = 0;
+        ValueType::U1 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::U2)
     {
-        ValueType::I1 value = 0;
+        ValueType::U2 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::U4)
     {
-        ValueType::I1 value = 0;
+        ValueType::U4 value = 0;
         out >> value;
         return value;
     }
     else if(format == Format::U8)
     {
-        ValueType::I1 value = 0;
-        out >> value;
-        return value;
-    }
-    else if(format == Format::F4)
-    {
-        ValueType::F4 value = 0;
-        out >> value;
-        return value;
-    }
-    else if(format == Format::F8)
-    {
-        ValueType::F8 value = 0;
+        ValueType::U8 value = 0;
         out >> value;
         return value;
     }
@@ -328,68 +305,122 @@ Item::~Item()
 {
 
 }
-
-ItemPtr Item::List()
+ItemPtr Item::List(initializer_list<ValueType::Item> values)
 {
-    return std::make_shared<Item>(Format::List);
+    ItemPtr item = std::make_shared<Item>(Format::List);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::Bool()
+ItemPtr Item::Bool(initializer_list<ValueType::Bool> values)
 {
-    return std::make_shared<Item>(Format::Boolean);
+    ItemPtr item = std::make_shared<Item>(Format::Boolean);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::Binary()
+ItemPtr Item::Binary(initializer_list<ValueType::Binary> values)
 {
-    return std::make_shared<Item>(Format::Binary);
+    ItemPtr item = std::make_shared<Item>(Format::Binary);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::I1()
+ItemPtr Item::I1(initializer_list<ValueType::I1> values)
 {
-    return std::make_shared<Item>(Format::I1);
+    ItemPtr item = std::make_shared<Item>(Format::I1);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::I2()
+ItemPtr Item::I2(initializer_list<ValueType::I2> values)
 {
-    return std::make_shared<Item>(Format::I2);
+    ItemPtr item = std::make_shared<Item>(Format::I2);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::I4()
+ItemPtr Item::I4(initializer_list<ValueType::I4> values)
 {
-    return std::make_shared<Item>(Format::I4);
+    ItemPtr item = std::make_shared<Item>(Format::I4);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::I8()
+ItemPtr Item::I8(initializer_list<ValueType::I8> values)
 {
-    return std::make_shared<Item>(Format::I8);
+    ItemPtr item = std::make_shared<Item>(Format::I8);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::U1()
+ItemPtr Item::U1(initializer_list<ValueType::U1> values)
 {
-    return std::make_shared<Item>(Format::U1);
+    ItemPtr item = std::make_shared<Item>(Format::U1);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::U2()
+ItemPtr Item::U2(initializer_list<ValueType::U2> values)
 {
-    return std::make_shared<Item>(Format::U2);
+    ItemPtr item = std::make_shared<Item>(Format::U2);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::U4()
+ItemPtr Item::U4(initializer_list<ValueType::U4> values)
 {
-    return std::make_shared<Item>(Format::U4);
+    ItemPtr item = std::make_shared<Item>(Format::U4);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-ItemPtr Item::U8()
+ItemPtr Item::U8(initializer_list<ValueType::U8> values)
 {
-    return std::make_shared<Item>(Format::U8);
+    ItemPtr item = std::make_shared<Item>(Format::U8);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
 }
 
-void Item::append(const Value &value)
+inline void Item::append(const Value &value)
 {
     values.emplace_back(value);
 }
 
-size_t Item::getCount()
+inline size_t Item::getCount()
 {
     return values.size();
 }
@@ -464,7 +495,7 @@ ValueType::Item Item::getList(size_t index)
     return getValue<ValueType::Item>(index);
 }
 
-Format Item::getFormat() const
+inline Format Item::getFormat() const
 {
     return format;
 }
@@ -479,6 +510,11 @@ int Item::formatSize()
     else if(format == Format::I8 || format == Format::U8)
         size = 8;
     return size;
+}
+
+size_t Item::dataLength()
+{
+    return getCount() * formatSize();
 }
 
 }

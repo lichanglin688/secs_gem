@@ -15,19 +15,19 @@ int main(int argc, char *argv[])
     msg = msg.split(" ").join("");
     QByteArray data = QByteArray::fromHex(msg.toLocal8Bit());
     Message message;
-    message.decode(data);
+    //message.decode(data);
     try {
-        ItemPtr list = message.getItem(0);
-        Visitor v;
-        std::visit(v, list->values[0]);
-        Debug(list->getList()->getBool());
-        Debug(list->getList(1)->getList()->getString().c_str());
-        Debug(list->getList(1)->getList(1)->getString().c_str());
+        //ItemPtr list = message.getItem(0);
+        //Visitor v;
+        //std::visit(v, list->values[0]);
+        //Debug(list->getList()->getBool());
+        //Debug(list->getList(1)->getList()->getString().c_str());
+        //Debug(list->getList(1)->getList(1)->getString().c_str());
     } catch (const std::bad_variant_access& e) {
         qDebug() << "fail !!!";
     }
 
-    ItemPtr item1 = Item::Bool();
+    ItemPtr item1 = Item::Bool({ true });
     item1->append(false);
 
     ItemPtr item2 = Item::List();
@@ -36,8 +36,12 @@ int main(int argc, char *argv[])
     ItemPtr item3 = Item::List();
     item3->append(item2);
 
+    ItemPtr item4 = Item::U8({123, 456});
+    //item4->append((ValueType::U8)123);
+
     Message msgObj;
-    msgObj.appendItem(item3);
+    //msgObj.appendItem(item3);
+    msgObj.appendItem(item4);
 
     Message msgObj2;
     QByteArray data1 = msgObj.encode();
@@ -47,7 +51,11 @@ int main(int argc, char *argv[])
     ItemPtr list = msgObj2.getItem(0);
     try
     {
-        Debug(list->getList(0)->getList(0)->getBool(0));
+        //Debug(list->getList(0)->getList(0)->getBool(0));
+        //Debug(list->getList(0)->getList(0)->getBool(1));
+//        Visitor v;
+//        std::visit(v, msgObj2.getItem(1)->values[0]);
+        Debug(msgObj2.getItem(0)->getU8(1));
     }
     catch (const std::bad_variant_access&e)
     {
