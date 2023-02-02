@@ -38,7 +38,7 @@ using Item = ItemPtr;
 };
 
 class Item;
-#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::Item
+#define ValueTypeList ValueType::ASCII, ValueType::Bool, ValueType::U1, ValueType::U2, ValueType::U4, ValueType::U8, ValueType::I1, ValueType::I2, ValueType::I4, ValueType::I8, ValueType::F4, ValueType::F8, ValueType::Item
 using Value = variant<ValueTypeList>;
 
 //LCS和JIS8未实现，不可使用
@@ -81,6 +81,8 @@ public:
     static ItemPtr U2(initializer_list<ValueType::U2> values = {});
     static ItemPtr U4(initializer_list<ValueType::U4> values = {});
     static ItemPtr U8(initializer_list<ValueType::U8> values = {});
+    static ItemPtr F4(initializer_list<ValueType::F4> values = {});
+    static ItemPtr F8(initializer_list<ValueType::F8> values = {});
 
     void append(const Value &value);
 
@@ -105,6 +107,8 @@ public:
     ValueType::U2 getU2(size_t index = 0);
     ValueType::U4 getU4(size_t index = 0);
     ValueType::U8 getU8(size_t index = 0);
+    ValueType::F4 getF4(size_t index = 0);
+    ValueType::F8 getF8(size_t index = 0);
     ValueType::Item getList(size_t index = 0);
 
     Format getFormat() const;

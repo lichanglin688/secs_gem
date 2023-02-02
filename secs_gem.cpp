@@ -111,6 +111,14 @@ void Message::inputItem(QDataStream &in, const ItemPtr &item)
         {
             in << item->getValue<ValueType::U8>(i);
         }
+        else if (format == Format::F4)
+        {
+            in << item->getValue<ValueType::F4>(i);
+        }
+        else if (format == Format::F8)
+        {
+            in << item->getValue<ValueType::F8>(i);
+        }
     }
 }
 
@@ -291,6 +299,18 @@ Value Message::outItemValue(QDataStream &out, const Format &format)
         out >> value;
         return value;
     }
+    else if (format == Format::F4)
+    {
+        ValueType::F4 value = 0;
+        out >> value;
+        return value;
+    }
+    else if (format == Format::F8)
+    {
+        ValueType::F8 value = 0;
+        out >> value;
+        return value;
+    }
     return 0;
 }
 
@@ -415,6 +435,26 @@ ItemPtr Item::U8(initializer_list<ValueType::U8> values)
     return item;
 }
 
+ItemPtr Item::F8(initializer_list<ValueType::F8> values)
+{
+    ItemPtr item = std::make_shared<Item>(Format::F8);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
+}
+
+ItemPtr Item::F4(initializer_list<ValueType::F4> values)
+{
+    ItemPtr item = std::make_shared<Item>(Format::F4);
+    for (auto&& value : values)
+    {
+        item->append(value);
+    }
+    return item;
+}
+
 inline void Item::append(const Value &value)
 {
     values.emplace_back(value);
@@ -488,6 +528,16 @@ ValueType::U4 Item::getU4(size_t index)
 ValueType::U8 Item::getU8(size_t index)
 {
     return getValue<ValueType::U8>(index);
+}
+
+ValueType::F4 Item::getF4(size_t index)
+{
+    return getValue<ValueType::F4>(index);
+}
+
+ValueType::F8 Item::getF8(size_t index)
+{
+    return getValue<ValueType::F8>(index);
 }
 
 ValueType::Item Item::getList(size_t index)

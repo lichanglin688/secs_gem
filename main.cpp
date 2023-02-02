@@ -15,14 +15,14 @@ int main(int argc, char *argv[])
     msg = msg.split(" ").join("");
     QByteArray data = QByteArray::fromHex(msg.toLocal8Bit());
     Message message;
-    //message.decode(data);
+    message.decode(data);
     try {
-        //ItemPtr list = message.getItem(0);
-        //Visitor v;
-        //std::visit(v, list->values[0]);
-        //Debug(list->getList()->getBool());
-        //Debug(list->getList(1)->getList()->getString().c_str());
-        //Debug(list->getList(1)->getList(1)->getString().c_str());
+        ItemPtr list = message.getItem(0);
+        Visitor v;
+        std::visit(v, list->values[0]);
+        Debug(list->getList()->getBool());
+        Debug(list->getList(1)->getList()->getString().c_str());
+        Debug(list->getList(1)->getList(1)->getString().c_str());
     } catch (const std::bad_variant_access& e) {
         qDebug() << "fail !!!";
     }
@@ -33,29 +33,52 @@ int main(int argc, char *argv[])
     ItemPtr item2 = Item::List();
     item2->append(item1);
 
-    ItemPtr item3 = Item::List();
-    item3->append(item2);
+    ItemPtr item3 = Item::I1({3});
+    ItemPtr item4 = Item::I2({4});
+    ItemPtr item5 = Item::I4({5});
+    ItemPtr item6 = Item::I8({6});
+    ItemPtr item7 = Item::Binary({7});
+    ItemPtr item8 = Item::U1({8});
+    ItemPtr item9 = Item::U2({9});
+    ItemPtr item10 = Item::U4({10});
+    ItemPtr item11 = Item::U8({11});
+    ItemPtr item12 = Item::F4({12});
+    ItemPtr item13 = Item::F8({13});
 
-    ItemPtr item4 = Item::U8({123, 456});
-    //item4->append((ValueType::U8)123);
 
     Message msgObj;
-    //msgObj.appendItem(item3);
+    msgObj.appendItem(item1);
+    msgObj.appendItem(item2);
+    msgObj.appendItem(item3);
     msgObj.appendItem(item4);
+    msgObj.appendItem(item5);
+    msgObj.appendItem(item6);
+    msgObj.appendItem(item7);
+    msgObj.appendItem(item8);
+    msgObj.appendItem(item9);
+    msgObj.appendItem(item10);
+    msgObj.appendItem(item11);
+    msgObj.appendItem(item12);
+    msgObj.appendItem(item13);
 
     Message msgObj2;
-    QByteArray data1 = msgObj.encode();
+    msgObj2.decode(msgObj.encode());
 
-    msgObj2.decode(data1);
-
-    ItemPtr list = msgObj2.getItem(0);
     try
     {
-        //Debug(list->getList(0)->getList(0)->getBool(0));
-        //Debug(list->getList(0)->getList(0)->getBool(1));
-//        Visitor v;
-//        std::visit(v, msgObj2.getItem(1)->values[0]);
-        Debug(msgObj2.getItem(0)->getU8(1));
+        Debug(msgObj2.getItem(0)->getBool(1));
+        Debug(msgObj2.getItem(1)->getList()->getBool());
+        Debug(msgObj2.getItem(2)->getI1());
+        Debug(msgObj2.getItem(3)->getI2());
+        Debug(msgObj2.getItem(4)->getI4());
+        Debug(msgObj2.getItem(5)->getI8());
+        Debug(msgObj2.getItem(6)->getBinary());
+        Debug(msgObj2.getItem(7)->getU1());
+        Debug(msgObj2.getItem(8)->getU2());
+        Debug(msgObj2.getItem(9)->getU4());
+        Debug(msgObj2.getItem(10)->getU8());
+        Debug(msgObj2.getItem(11)->getF4());
+        Debug(msgObj2.getItem(12)->getF8());
     }
     catch (const std::bad_variant_access&e)
     {
