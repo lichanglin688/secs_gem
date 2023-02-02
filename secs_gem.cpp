@@ -570,31 +570,31 @@ size_t Item::dataLength()
 
 bool Item::checkValueFormat(const Value& value)
 {
-    if (value.index() == 0 && format == Format::ASCII)
+    if (std::holds_alternative<ValueType::ASCII>(value) && format == Format::ASCII)
         return true;
-    else if (value.index() == 1 && format == Format::Boolean)
+    else if (std::holds_alternative<ValueType::Bool>(value) && format == Format::Boolean)
         return true;
-    else if (value.index() == 2 && format == Format::U1)
+    else if (std::holds_alternative<ValueType::U1>(value) && format == Format::U1)
         return true;
-    else if (value.index() == 3 && format == Format::U2)
+    else if (std::holds_alternative<ValueType::U2>(value) && format == Format::U2)
         return true;
-    else if (value.index() == 4 && format == Format::U4)
+    else if (std::holds_alternative<ValueType::U4>(value) && format == Format::U4)
         return true;
-    else if (value.index() == 5 && format == Format::U8)
+    else if (std::holds_alternative<ValueType::U8>(value) && format == Format::U8)
         return true;
-    else if (value.index() == 6 && (format == Format::I1 || format == Format::Binary))
+    else if (std::holds_alternative<ValueType::I1>(value) && (format == Format::I1 || format == Format::Binary))
         return true;
-    else if (value.index() == 7 && format == Format::I2)
+    else if (std::holds_alternative<ValueType::I2>(value) && format == Format::I2)
         return true;
-    else if (value.index() == 8 && format == Format::I4)
+    else if (std::holds_alternative<ValueType::I4>(value) && format == Format::I4)
         return true;
-    else if (value.index() == 9 && format == Format::I8)
+    else if (std::holds_alternative<ValueType::I8>(value) && format == Format::I8)
         return true;
-    else if (value.index() == 10 && format == Format::F4)
+    else if (std::holds_alternative<ValueType::F4>(value)  && format == Format::F4)
         return true;
-    else if (value.index() == 11 && format == Format::F8)
+    else if (std::holds_alternative<ValueType::F8>(value)  && format == Format::F8)
         return true;
-    else if (value.index() == 12 && format == Format::List)
+    else if (std::holds_alternative<ValueType::Item>(value) && format == Format::List)
         return true;
     return false;
 }
