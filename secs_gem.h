@@ -117,7 +117,10 @@ public:
 
     size_t dataLength();
 
-//private:
+private:
+    bool checkValueFormat(const Value &value);
+
+private:
     std::vector<Value> values;
     Format format;
 };
@@ -132,7 +135,6 @@ public:
     ItemPtr getItem(size_t index);
     void appendItem(ItemPtr item);
 
- //private:
     uint16_t deviceID = 0;
     uint8_t s = 0;
     uint8_t f = 0;
@@ -141,6 +143,7 @@ public:
     uint32_t systemBytes = 0;
     bool replyExpected = false;
 
+private:
     std::vector<ItemPtr> items;
 
 private:

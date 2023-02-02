@@ -457,6 +457,7 @@ ItemPtr Item::F4(initializer_list<ValueType::F4> values)
 
 inline void Item::append(const Value &value)
 {
+    assert(checkValueFormat(value));
     values.emplace_back(value);
 }
 
@@ -565,6 +566,37 @@ int Item::formatSize()
 size_t Item::dataLength()
 {
     return getCount() * formatSize();
+}
+
+bool Item::checkValueFormat(const Value& value)
+{
+    if (value.index() == 0 && format == Format::ASCII)
+        return true;
+    else if (value.index() == 1 && format == Format::Boolean)
+        return true;
+    else if (value.index() == 2 && format == Format::U1)
+        return true;
+    else if (value.index() == 3 && format == Format::U2)
+        return true;
+    else if (value.index() == 4 && format == Format::U4)
+        return true;
+    else if (value.index() == 5 && format == Format::U8)
+        return true;
+    else if (value.index() == 6 && (format == Format::I1 || format == Format::Binary))
+        return true;
+    else if (value.index() == 7 && format == Format::I2)
+        return true;
+    else if (value.index() == 8 && format == Format::I4)
+        return true;
+    else if (value.index() == 9 && format == Format::I8)
+        return true;
+    else if (value.index() == 10 && format == Format::F4)
+        return true;
+    else if (value.index() == 11 && format == Format::F8)
+        return true;
+    else if (value.index() == 12 && format == Format::List)
+        return true;
+    return false;
 }
 
 }

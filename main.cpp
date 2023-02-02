@@ -18,17 +18,18 @@ int main(int argc, char *argv[])
     message.decode(data);
     try {
         ItemPtr list = message.getItem(0);
-        Visitor v;
-        std::visit(v, list->values[0]);
+        //Visitor v;
+        //std::visit(v, list->values[0]);
         Debug(list->getList()->getBool());
         Debug(list->getList(1)->getList()->getString().c_str());
         Debug(list->getList(1)->getList(1)->getString().c_str());
     } catch (const std::bad_variant_access& e) {
-        qDebug() << "fail !!!";
+        qDebug() << "fail !!! " << e.what();
     }
 
     ItemPtr item1 = Item::Bool({ true });
     item1->append(false);
+    //item1->append(1);
 
     ItemPtr item2 = Item::List();
     item2->append(item1);
