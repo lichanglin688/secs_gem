@@ -71,11 +71,15 @@ void Message::inputItem(QDataStream &in, const ItemPtr &item)
         {
             inputItem(in, item->getValue<ValueType::Item>(i));
         }
+        else if (format == Format::ASCII)
+        {
+            in << (qint8)item->getValue<ValueType::ASCII>(i);
+        }
         else if(format == Format::Binary)
         {
             in << item->getValue<ValueType::Binary>(i);
         }
-        else if(format == Format::Boolean)
+        else if(format == Format::Bool)
         {
             in << item->getValue<ValueType::Bool>(i);
         }
@@ -239,7 +243,7 @@ Value Message::outItemValue(QDataStream &out, const Format &format)
         out >> value;
         return value;
     }
-    else if(format == Format::Boolean)
+    else if(format == Format::Bool)
     {
         ValueType::Bool value = false;
         out >> value;
@@ -335,126 +339,6 @@ ItemPtr Item::List(initializer_list<ValueType::Item> values)
     return item;
 }
 
-ItemPtr Item::Bool(initializer_list<ValueType::Bool> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::Boolean);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::Binary(initializer_list<ValueType::Binary> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::Binary);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::I1(initializer_list<ValueType::I1> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::I1);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::I2(initializer_list<ValueType::I2> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::I2);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::I4(initializer_list<ValueType::I4> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::I4);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::I8(initializer_list<ValueType::I8> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::I8);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::U1(initializer_list<ValueType::U1> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::U1);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::U2(initializer_list<ValueType::U2> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::U2);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::U4(initializer_list<ValueType::U4> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::U4);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::U8(initializer_list<ValueType::U8> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::U8);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::F8(initializer_list<ValueType::F8> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::F8);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
-ItemPtr Item::F4(initializer_list<ValueType::F4> values)
-{
-    ItemPtr item = std::make_shared<Item>(Format::F4);
-    for (auto&& value : values)
-    {
-        item->append(value);
-    }
-    return item;
-}
-
 inline void Item::append(const Value &value)
 {
     assert(checkValueFormat(value));
@@ -466,11 +350,6 @@ inline size_t Item::getCount()
     return values.size();
 }
 
-ValueType::ASCII Item::getASCII(size_t index)
-{
-    return getValue<ValueType::ASCII>(index);
-}
-
 string Item::getString()
 {
     string str;
@@ -479,71 +358,6 @@ string Item::getString()
         str.push_back(std::get<ValueType::ASCII>(value));
     }
     return str;
-}
-
-ValueType::Binary Item::getBinary(size_t index)
-{
-    return getValue<ValueType::Binary>(index);
-}
-
-ValueType::Bool Item::getBool(size_t index)
-{
-    return getValue<ValueType::Bool>(index);
-}
-
-ValueType::I1 Item::getI1(size_t index)
-{
-    return getValue<ValueType::I1>(index);
-}
-
-ValueType::I2 Item::getI2(size_t index)
-{
-    return getValue<ValueType::I2>(index);
-}
-
-ValueType::I4 Item::getI4(size_t index)
-{
-    return getValue<ValueType::I4>(index);
-}
-
-ValueType::I8 Item::getI8(size_t index)
-{
-    return getValue<ValueType::I8>(index);
-}
-
-ValueType::U1 Item::getU1(size_t index)
-{
-    return getValue<ValueType::U1>(index);
-}
-
-ValueType::U2 Item::getU2(size_t index)
-{
-    return getValue<ValueType::U2>(index);
-}
-
-ValueType::U4 Item::getU4(size_t index)
-{
-    return getValue<ValueType::U4>(index);
-}
-
-ValueType::U8 Item::getU8(size_t index)
-{
-    return getValue<ValueType::U8>(index);
-}
-
-ValueType::F4 Item::getF4(size_t index)
-{
-    return getValue<ValueType::F4>(index);
-}
-
-ValueType::F8 Item::getF8(size_t index)
-{
-    return getValue<ValueType::F8>(index);
-}
-
-ValueType::Item Item::getList(size_t index)
-{
-    return getValue<ValueType::Item>(index);
 }
 
 inline Format Item::getFormat() const
@@ -572,7 +386,7 @@ bool Item::checkValueFormat(const Value& value)
 {
     if (std::holds_alternative<ValueType::ASCII>(value) && format == Format::ASCII)
         return true;
-    else if (std::holds_alternative<ValueType::Bool>(value) && format == Format::Boolean)
+    else if (std::holds_alternative<ValueType::Bool>(value) && format == Format::Bool)
         return true;
     else if (std::holds_alternative<ValueType::U1>(value) && format == Format::U1)
         return true;
@@ -597,6 +411,16 @@ bool Item::checkValueFormat(const Value& value)
     else if (std::holds_alternative<ValueType::Item>(value) && format == Format::List)
         return true;
     return false;
+}
+
+ItemPtr Item::String(const string& str)
+{
+    ItemPtr item = ASCII();
+    for (auto&& s : str)
+    {
+        item->append(s);
+    }
+    return item;
 }
 
 }

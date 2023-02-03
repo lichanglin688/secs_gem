@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
         ItemPtr list = message.getItem(0);
         //Visitor v;
         //std::visit(v, list->values[0]);
-        Debug(list->getList()->getBool());
-        Debug(list->getList(1)->getList()->getString().c_str());
-        Debug(list->getList(1)->getList(1)->getString().c_str());
+        Debug(list->getItem()->getBool());
+        Debug(list->getItem(1)->getItem()->getString().c_str());
+        Debug(list->getItem(1)->getItem(1)->getString().c_str());
     } catch (const std::bad_variant_access& e) {
         qDebug() << "fail !!! " << e.what();
     }
@@ -44,7 +44,8 @@ int main(int argc, char *argv[])
     ItemPtr item10 = Item::U4({10});
     ItemPtr item11 = Item::U8({11});
     ItemPtr item12 = Item::F4({12});
-    ItemPtr item13 = Item::F8({13});
+    ItemPtr item13 = Item::F8({ 13 });
+    ItemPtr item14 = Item::String("ascii");
 
 
     Message msgObj;
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
     msgObj.appendItem(item11);
     msgObj.appendItem(item12);
     msgObj.appendItem(item13);
+    msgObj.appendItem(item14);
 
     Message msgObj2;
     msgObj2.decode(msgObj.encode());
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
     try
     {
         Debug(msgObj2.getItem(0)->getBool(1));
-        Debug(msgObj2.getItem(1)->getList()->getBool());
+        Debug(msgObj2.getItem(1)->getItem()->getBool());
         Debug(msgObj2.getItem(2)->getI1());
         Debug(msgObj2.getItem(3)->getI2());
         Debug(msgObj2.getItem(4)->getI4());
@@ -80,6 +82,7 @@ int main(int argc, char *argv[])
         Debug(msgObj2.getItem(10)->getU8());
         Debug(msgObj2.getItem(11)->getF4());
         Debug(msgObj2.getItem(12)->getF8());
+        Debug(msgObj2.getItem(13)->getString().c_str());
     }
     catch (const std::bad_variant_access&e)
     {

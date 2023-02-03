@@ -1,12 +1,12 @@
 ﻿#ifndef SECS_GEM_H
 #define SECS_GEM_H
 
-#include <QDebug>
 #include <variant>
 #include <vector>
 #include <memory>
 #include <QByteArray>
 #include <initializer_list>
+#include <QDebug>
 
 class QDataStream;
 namespace Secs{
@@ -46,7 +46,7 @@ enum class Format
 {
     List = 0,		        // 00000000
     Binary = 0x20,		    // 00100000
-    Boolean = 0x24,		    // 00100100
+    Bool = 0x24,		    // 00100100
     ASCII = 0x40,		    // 01000000
     JIS8 = 0x44,			// 01000100
     LCS = 0x48,			    // 01001000
@@ -63,26 +63,60 @@ enum class Format
     NONE = 0xFF
 };
 
+#define SECS_CREATE_ITEM(type) \
+        static ItemPtr type(initializer_list<ValueType::type> values = {}) \
+        {\
+            ItemPtr item = std::make_shared<Item>(Format::type); \
+            for (auto&& value : values)\
+            {\
+                item->append(value);\
+            }\
+            return item;\
+        }
+
+#define SECS_GET_VALUE(type) \
+    ValueType::type get##type(size_t index = 0)\
+    {\
+        return getValue<ValueType::type>(index);\
+    }
+
 class Item
 {
 public:
     Item(Format format = Format::NONE);
     ~Item();
 
+    SECS_CREATE_ITEM(ASCII)
+    SECS_CREATE_ITEM(Bool)
+    SECS_CREATE_ITEM(Binary)
+    SECS_CREATE_ITEM(I1)
+    SECS_CREATE_ITEM(I2)
+    SECS_CREATE_ITEM(I4)
+    SECS_CREATE_ITEM(I8)
+    SECS_CREATE_ITEM(U1)
+    SECS_CREATE_ITEM(U2)
+    SECS_CREATE_ITEM(U4)
+    SECS_CREATE_ITEM(U8)
+    SECS_CREATE_ITEM(F4)
+    SECS_CREATE_ITEM(F8)
     static ItemPtr List(initializer_list<ValueType::Item> values = {});
-    static ItemPtr Bool(initializer_list<ValueType::Bool> values = {});
-    static ItemPtr Binary(initializer_list<ValueType::Binary> values = {});
-    static ItemPtr I1(initializer_list<ValueType::I1> values = {});
-    static ItemPtr I2(initializer_list<ValueType::I2> values = {});
-    static ItemPtr I4(initializer_list<ValueType::I4> values = {});
-    static ItemPtr I8(initializer_list<ValueType::I8> values = {});
+    static ItemPtr String(const string &str);
 
-    static ItemPtr U1(initializer_list<ValueType::U1> values = {});
-    static ItemPtr U2(initializer_list<ValueType::U2> values = {});
-    static ItemPtr U4(initializer_list<ValueType::U4> values = {});
-    static ItemPtr U8(initializer_list<ValueType::U8> values = {});
-    static ItemPtr F4(initializer_list<ValueType::F4> values = {});
-    static ItemPtr F8(initializer_list<ValueType::F8> values = {});
+    SECS_GET_VALUE(ASCII)
+    SECS_GET_VALUE(Binary)
+    SECS_GET_VALUE(Bool)
+    SECS_GET_VALUE(I1)
+    SECS_GET_VALUE(I2)
+    SECS_GET_VALUE(I4)
+    SECS_GET_VALUE(I8)
+    SECS_GET_VALUE(U1)
+    SECS_GET_VALUE(U2)
+    SECS_GET_VALUE(U4)
+    SECS_GET_VALUE(U8)
+    SECS_GET_VALUE(F4)
+    SECS_GET_VALUE(F8)
+    SECS_GET_VALUE(Item)
+    string getString();
 
     void append(const Value &value);
 
@@ -94,22 +128,6 @@ public:
         static_assert(std::_Is_any_of_v<Type, ValueTypeList>, "Type is not Secs type");
         return std::get<Type>(values[index]);
     }
-
-    ValueType::ASCII getASCII(size_t index = 0);
-    string getString();
-    ValueType::Binary getBinary(size_t index = 0);
-    ValueType::Bool getBool(size_t index = 0);
-    ValueType::I1 getI1(size_t index = 0);
-    ValueType::I2 getI2(size_t index = 0);
-    ValueType::I4 getI4(size_t index = 0);
-    ValueType::I8 getI8(size_t index = 0);
-    ValueType::U1 getU1(size_t index = 0);
-    ValueType::U2 getU2(size_t index = 0);
-    ValueType::U4 getU4(size_t index = 0);
-    ValueType::U8 getU8(size_t index = 0);
-    ValueType::F4 getF4(size_t index = 0);
-    ValueType::F8 getF8(size_t index = 0);
-    ValueType::Item getList(size_t index = 0);
 
     Format getFormat() const;
 
