@@ -130,6 +130,13 @@ void Message::inputItemInfo(QDataStream &in, const ItemPtr &item)
 {
     Format format = item->getFormat();
     int dataLength = item->dataLength();
+    if(format == Format::List && dataLength == 0)
+    {
+        in << (ValueType::U1)((int)format | 1);
+        in << (ValueType::U1)0;
+        return;
+    }
+
     if(dataLength <= 0)return;
 
     if(dataLength <= 0xff)
